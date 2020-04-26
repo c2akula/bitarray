@@ -37,6 +37,9 @@ func New(n int) BitArray {
 	}
 }
 
+// Size returns the no. of bits stored.
+func (ba *BitArray) Size() int { return ba.n }
+
 func biandsi(k int) (uint64, uint64) { return c64.DivMod(uint64(k)) }
 
 func (ba *BitArray) set1(bi, si uint64) { ba.bits[bi] |= 1 << si }

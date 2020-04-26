@@ -1,11 +1,11 @@
 # bitarray
-Package bitarray provides a convenient and fast BitArray data structure that compactly stores bits in Go.
+Package bitarray provides a convenient and fast `BitArray` data structure that compactly stores bits in Go.
 
 # Installation
 Just do `go get github.com/c2akula/bitarray` to install the package.
 
 # Usage
-The package provides one type BitArray. It exposes an api to work with booleans but internally stores them in uint64s.
+The package provides a single type `BitArray`. It exposes an api to work with booleans but internally stores them as bits in uint64s.
 ## Creating a BitArray
 ```go
 ba := bitarray.New(65) // creates a bitarray containing 65 bits

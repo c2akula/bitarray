@@ -32,7 +32,7 @@ ba.ClrAll() // clears all the bits
 
 ## Tests and Benchmarks
 Tests and benchmarks can be found in ba_test.go.
-```go
+```
 goos: windows
 goarch: amd64
 pkg: github.com/c2akula/bitarray
@@ -47,7 +47,7 @@ BenchmarkBitArray/set
 BenchmarkBitArray/set-8         208177489                5.79 ns/op            0B/op          0 allocs/op
 BenchmarkBitArray/tgl
 BenchmarkBitArray/tgl-8         205501374                5.82 ns/op            0B/op          0 allocs/op
-BenchmarkBitArray_Cnt/cnt_-_bits-8              213713914                5.62 ns/op            0 B/op          0 allocs/op
+BenchmarkBitArray_Cnt/cnt_-_bits-8              213713914                5.62 ns/op            0B/op          0 allocs/op
 ```
 
 # Issues

@@ -1,4 +1,4 @@
-package bigbitarray
+package bitarray
 
 import (
 	"fmt"

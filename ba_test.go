@@ -3,6 +3,7 @@ package bitarray
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"testing"
 	"time"
 )
@@ -136,6 +137,43 @@ func TestBitArray(t *testing.T) {
 
 		fmt.Println("gc: ", gc)
 	})
+
+	t.Run("copy", func(t *testing.T) {
+		const sb = "00011100111011110101011110110010010100101010000110001010100011011010111001110110011111001101100000101011010011001110110000111010101100010110001101101011111100110000110101100000000100011110100111000101100001110010010011001001000001111010101110000001001101001"
+		src := New(len(sb))
+		for i, b := range sb {
+			if b == '1' {
+				src.Set(i)
+			}
+		}
+
+		dst := New(len(sb))
+		Copy(&dst, &src)
+		if dst.String() != src.String() {
+			t.Fatalf("Test failed. got = %s\nexp = %s\n", dst.String(), sb)
+		}
+	})
+
+	t.Run("fromstring", func(t *testing.T) {
+		const sb = "00011100111011110101011110110010010100101010000110001010100011011010111001110110011111001101100000101011010011001110110000111010101100010110001101101011111100110000110101100000000100011110100111000101100001110010010011001001000001111010101110000001001101001"
+		ba := FromStr(sb)
+		if ba.String() != sb {
+			t.Fatalf("Test failed. got = %s\nexp = %s\n", ba.String(), sb)
+		}
+	})
+
+	t.Run("fromuint64", func(t *testing.T) {
+		const u = uint64(0xfefefefefefefefe)
+		ba := FromUint64(u)
+		var sb strings.Builder
+		for i := 0; i < ba.n; i++ {
+			sb.WriteByte(chkbit(i, u))
+		}
+		fmt.Println("sb", sb.String(), sb.Len())
+		if ba.String() != sb.String() {
+			t.Fatalf("Test failed. got = %s\nexp = %s\n", ba.String(), sb.String())
+		}
+	})
 }
 
 func BenchmarkNew(b *testing.B) {
@@ -226,3 +264,5 @@ func BenchmarkBiandSi(b *testing.B) {
 		biandsi(i)
 	}
 }
+
+func chkbit(k int, u uint64) byte { return '0' + byte((u>>k)&1) }

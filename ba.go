@@ -1,7 +1,6 @@
 package bitarray
 
 import (
-	"bytes"
 	"math"
 	"math/bits"
 
@@ -25,16 +24,50 @@ const (
 // Bits externally represented as `bool` are stored internally as `uint64`s.
 // The total number of bits stored is set at creation and is immutable.
 type BitArray struct {
-	bits []uint64
+	bits []Bit
 	n    int // no. of bits
 }
 
 // New creates a new BitArray of `n` bits.
 func New(n int) BitArray {
 	return BitArray{
-		bits: make([]uint64, int(math.Ceil(float64(n)/64))),
+		bits: make([]Bit, int(math.Ceil(float64(n)/64))),
 		n:    n,
 	}
+}
+
+// Copy copies src into dst.
+func Copy(dst, src *BitArray) {
+	if dst != src && src != nil {
+		if src.n != dst.n {
+			panic("size of bit arrays must be the same for copy")
+		}
+
+		if dst.n == 0 {
+			// nothing to do here, since the source `oa` has nothing to copy from
+			return
+		}
+
+		copy(dst.bits, src.bits)
+	}
+}
+
+// FromStr creates a BitArray from a bit string
+func FromStr(bs string) BitArray {
+	ba := New(len(bs))
+	for i, b := range bs {
+		if b == '1' {
+			ba.Set(i)
+		}
+	}
+	return ba
+}
+
+// FromUint64 creates a BitArray from the bit representation of u.
+func FromUint64(u uint64) BitArray {
+	ba := New(64)
+	ba.bits[0] = u
+	return ba
 }
 
 // Size returns the no. of bits stored.
@@ -97,7 +130,7 @@ func (ba *BitArray) Tgl(k int) {
 // Cnt returns the number of set bits.
 func (ba *BitArray) Cnt() (n int) {
 	for _, b := range ba.bits {
-		n += bits.OnesCount64(b)
+		n += bits.OnesCount64(uint64(b))
 	}
 	return
 }
@@ -123,11 +156,11 @@ func (ba *BitArray) Swap(k int, v *Bit) {
 }
 
 func (ba *BitArray) String() string {
-	bs := bytes.Repeat([]byte("0"), ba.n)
-	for i := range bs {
+	sb := make([]byte, ba.n)
+	for i := range sb {
 		if ba.Chk(i) {
-			bs[i] = '1'
+			sb[i] = '1'
 		}
 	}
-	return string(bs)
+	return string(sb)
 }

@@ -76,7 +76,7 @@ func swapBlocks(a, b []uint64, bi, m uint64) {
 }
 
 // SwapRange swaps the bits between bit arrays `a`and `b` starting at position `k`. If the
-// sizes are different, then min(a.Size(), b.Size()) number of bits are swapped.
+// sizes are different, then min(a.Size(), b.Size())-k number of bits are swapped.
 func SwapRange(a, b *BitArray, k int) {
 	n := b.n
 	if a.n < n {

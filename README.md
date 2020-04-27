@@ -26,6 +26,12 @@ oldValue := ba.ChkClr(5) // returns the value at position 5 before clearing it
 v := bit.One
 ba.Swap(5, &v) // swaps the value at position 5 with v
 
+b1 := bitarray.FromStr("110110010")
+b2 := bitarray.FromStr("0011011")
+bitarray.SwapRange(&b1, &b2, 3) // swap bits starting at position 3
+fmt.Println("b1: ", &b1, "b2: ", &b2) // b1 = "110101110", b2 = "0011100" 
+
+
 ba.SetAll() // sets all the bits
 ba.ClrAll() // clears all the bits
 ```
@@ -36,18 +42,15 @@ Tests and benchmarks can be found in ba_test.go.
 goos: windows
 goarch: amd64
 pkg: github.com/c2akula/bitarray
-BenchmarkNew
-BenchmarkNew-8                  37570326                27.5 ns/op            32B/op          1 allocs/op
-BenchmarkBitArray
-BenchmarkBitArray/chk
-BenchmarkBitArray/chk-8         191312590                5.96 ns/op            0B/op          0 allocs/op
-BenchmarkBitArray/put
-BenchmarkBitArray/put-8         174875466                6.78 ns/op            0B/op          0 allocs/op
-BenchmarkBitArray/set
-BenchmarkBitArray/set-8         208177489                5.79 ns/op            0B/op          0 allocs/op
-BenchmarkBitArray/tgl
-BenchmarkBitArray/tgl-8         205501374                5.82 ns/op            0B/op          0 allocs/op
-BenchmarkBitArray_Cnt/cnt_-_bits-8              213713914                5.62 ns/op            0B/op          0 allocs/op
+BenchmarkBitArray/chk-8                                   20200155                311 ns/op            0 B/op          0 allocs/op
+BenchmarkBitArray/put-8                                 1000000000               1.41 ns/op            0 B/op          0 allocs/op
+BenchmarkBitArray/set-8                                 1000000000               1.31 ns/op            0 B/op          0 allocs/op
+BenchmarkBitArray/tgl-8                                 1000000000               1.42 ns/op            0 B/op          0 allocs/op
+BenchmarkBitArray/swap-range,_best-case-8                632504266               9.50 ns/op            0 B/op          0 allocs/op
+BenchmarkBitArray/swap-range,_worst-case-8                33005805                185 ns/op            0 B/op          0 allocs/op
+BenchmarkBitArray/copy-8                                1000000000               5.00 ns/op            0 B/op          0 allocs/op
+BenchmarkBitArray_Cnt/cnt_-_chk-8                         13548182                442 ns/op            0 B/op          0 allocs/op
+BenchmarkBitArray_Cnt/cnt_-_bits-8                       988570477               6.06 ns/op            0 B/op          0 allocs/op
 ```
 
 # Issues

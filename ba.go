@@ -158,6 +158,7 @@ func (ba *BitArray) Swap(k int, v *Bit) {
 func (ba *BitArray) String() string {
 	sb := make([]byte, ba.n)
 	for i := range sb {
+		sb[i] = '0'
 		if ba.Chk(i) {
 			sb[i] = '1'
 		}

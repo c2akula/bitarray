@@ -3,15 +3,7 @@ package bitarray
 import (
 	"math"
 	"math/bits"
-
-	"github.com/bmkessler/fastdiv"
 )
-
-var c64 fastdiv.Uint64
-
-func init() {
-	c64 = fastdiv.NewUint64(64)
-}
 
 type Bit = uint64
 
@@ -70,10 +62,67 @@ func FromUint64(u uint64) BitArray {
 	return ba
 }
 
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func swapBlocks(a, b []uint64, bi, m uint64) {
+	for ; bi < m; bi++ {
+		a[bi], b[bi] = b[bi], a[bi]
+	}
+}
+
+// SwapRange swaps the bits between bit arrays `a`and `b` starting at position `k`. If the
+// sizes are different, then min(a.Size(), b.Size()) number of bits are swapped.
+func SwapRange(a, b *BitArray, k int) {
+	n := b.n
+	if a.n < n {
+		n = a.n
+	}
+
+	bi, si := biandsi(k)
+	m := uint64(min(len(a.bits), len(b.bits)))
+	// if the index is a multiple of 64 then we'll just swap wholesale the bit banks
+	if si == 0 {
+		swapBlocks(a.bits, b.bits, bi, m)
+		return
+	}
+
+	// index is arbitrary, i.e. si is arbitrary, meaning we need to get to the next boundary
+	// so let's start by swapping till the next boundary
+	nb := n - k // number of bits
+	anum, bnum := &a.bits[bi], &b.bits[bi]
+	for ; si < 64; si++ {
+		if nb != 0 {
+			v := uint64(^(1 << si))
+			abit := (*anum >> si) & 1          // bit from a
+			bbit := (*bnum >> si) & 1          // bit from b
+			*anum = (*anum & v) | (bbit << si) // write bbit into a
+			*bnum = (*bnum & v) | (abit << si) // write abit into b
+			nb--
+		} else {
+			return
+		}
+	}
+
+	// we've swapped bits until we hit the start of the next boundary
+	// and now we'll resort to swapping blocks
+	bi++
+	swapBlocks(a.bits, b.bits, bi, m)
+}
+
+// TODO: Add GetRange, SetRange methods
+
 // Size returns the no. of bits stored.
 func (ba *BitArray) Size() int { return ba.n }
 
-func biandsi(k int) (uint64, uint64) { return c64.DivMod(uint64(k)) }
+func biandsi(k int) (uint64, uint64) {
+	i := uint64(k)
+	return i / 64, i % 64
+}
 
 func (ba *BitArray) set1(bi, si uint64) { ba.bits[bi] |= 1 << si }
 func (ba *BitArray) set0(bi, si uint64) { ba.bits[bi] &= ^(1 << si) }

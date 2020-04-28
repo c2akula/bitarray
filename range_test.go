@@ -254,7 +254,7 @@ func BenchmarkCopyRange(b *testing.B) {
 		randomize(&src, rng)
 		dst := New(512)
 		randomize(&dst, rng)
-		dr, sr := dst.Range(127, 385), src.Range(113, 385)
+		dr, sr := dst.Range(47, 445), src.Range(67, src.n-67)
 		b.StartTimer()
 
 		for i := 0; i < b.N; i++ {

@@ -26,15 +26,32 @@ oldValue := ba.ChkClr(5) // returns the value at position 5 before clearing it
 v := bit.One
 ba.Swap(5, &v) // swaps the value at position 5 with v
 
-b1 := bitarray.FromStr("110110010")
-b2 := bitarray.FromStr("0011011")
-bitarray.SwapRange(&b1, &b2, 3) // swap bits starting at position 3
-fmt.Println("b1: ", &b1, "b2: ", &b2) // b1 = "110101110", b2 = "0011100" 
-
-
 ba.SetAll() // sets all the bits
 ba.ClrAll() // clears all the bits
 ```
+
+## Range Operations
+There are two procedures `CopyRange` and `SwapRange` to help work with a range of bits. A`Range` represents
+a span over a certain number of bits starting at a specific position.
+### CopyRange
+```go
+b1 := FromStr("11001001")
+b2 := FromStr("00101110")
+// copy 3 bits starting at position 3 from `b2` into `b1` starting at position 1 
+bitarray.CopyRange(b1.Range(1, 3), b2.Range(3, 3))
+fmt.Println("b1: ", &b1) // b1 = "10111001"
+```
+`CopyRange` copies number of bits equal to that of the smaller range.
+
+### SwapRange
+```go
+b1 := FromStr("11001001")
+b2 := FromStr("00101110")
+// swap 3 bits starting at position 3 from `b2` with `b1` starting at position 1
+bitarray.SwapRange(b1.Range(1, 3), b2.Range(3, 3))
+fmt.Println("b1: ", b1, "b2: ", b2) // b1 = "10111001" b2 = "00110010" 
+```
+`SwapRange` swaps number of bits equal to that of the smaller range.
 
 ## Tests and Benchmarks
 Tests and benchmarks can be found in ba_test.go.
@@ -42,15 +59,19 @@ Tests and benchmarks can be found in ba_test.go.
 goos: windows
 goarch: amd64
 pkg: github.com/c2akula/bitarray
-BenchmarkBitArray/chk-8                                   20200155                311 ns/op            0 B/op          0 allocs/op
-BenchmarkBitArray/put-8                                 1000000000               1.41 ns/op            0 B/op          0 allocs/op
-BenchmarkBitArray/set-8                                 1000000000               1.31 ns/op            0 B/op          0 allocs/op
-BenchmarkBitArray/tgl-8                                 1000000000               1.42 ns/op            0 B/op          0 allocs/op
-BenchmarkBitArray/swap-range,_best-case-8                632504266               9.50 ns/op            0 B/op          0 allocs/op
-BenchmarkBitArray/swap-range,_worst-case-8                33005805                185 ns/op            0 B/op          0 allocs/op
-BenchmarkBitArray/copy-8                                1000000000               5.00 ns/op            0 B/op          0 allocs/op
-BenchmarkBitArray_Cnt/cnt_-_chk-8                         13548182                442 ns/op            0 B/op          0 allocs/op
-BenchmarkBitArray_Cnt/cnt_-_bits-8                       988570477               6.06 ns/op            0 B/op          0 allocs/op
+
+BenchmarkNew-8                                            40094756              28.1 ns/op            32 B/op          1 allocs/op
+BenchmarkBitArray/chk-8                                    3957813               297 ns/op             0 B/op          0 allocs/op
+BenchmarkBitArray/put-8                                  853075514              1.41 ns/op             0 B/op          0 allocs/op
+BenchmarkBitArray/set-8                                  846415746              1.43 ns/op             0 B/op          0 allocs/op
+BenchmarkBitArray/tgl-8                                  847111244              1.45 ns/op             0 B/op          0 allocs/op
+BenchmarkBitArray/swap-range,_best-case-8                 80213366              14.9 ns/op             0 B/op          0 allocs/op
+BenchmarkBitArray/swap-range,_worst-case-8                 6011475               184 ns/op             0 B/op          0 allocs/op
+BenchmarkBitArray/copy-8                                 251309268              4.76 ns/op             0 B/op          0 allocs/op
+BenchmarkBitArray_Cnt/cnt_-_bits-8                       191233108              6.28 ns/op             0 B/op          0 allocs/op
+BenchmarkCopyRange/worst_case_-_unaligned_copy-8            705885              1703 ns/op             0 B/op          0 allocs/op
+BenchmarkCopyRange/best_case_-_aligned_copy-8            122504306              9.54 ns/op             0 B/op          0 allocs/op
+
 ```
 
 # Issues

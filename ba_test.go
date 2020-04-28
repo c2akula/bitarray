@@ -175,30 +175,16 @@ func TestBitArray(t *testing.T) {
 		}
 	})
 
-	// TODO: test with
-	t.Run("get-slice", func(t *testing.T) {
-		slice := func(ba *BitArray, b, n int) (oa BitArray) {
-			if (b+n < 0) || (b+n > ba.n) {
-				panic("range specified is outside bounds")
-			}
-
-			if b != n {
-				oa = New(n)
-				for i := 0; i < n; i++ {
-					if ba.Chk(b) {
-						oa.Set(i)
-					}
-					b++
-				}
-			}
-			return
-		}
-
-		ba := FromStr("010111101")
-		oa := slice(&ba, 1, 5)
-		const eb = "10111"
-		if gb := oa.String(); gb != eb {
-			t.Fatalf("Test failed. got = %s, exp: %s\n", gb, eb)
+	t.Run("get-range, > 64 bits", func(t *testing.T) {
+		const ss = "11010011000010000010001110000010001000111011111010001000001000110011111110000001010111111010000001101110010011000010011100100001110100111110010100101100101000101001110100001101100010001010001001100011100001001111011011001100101011001111100010100000001001111"
+		const sd = "1110011101111010101111011001001010010101000011000101010001101101011100111011001111100110110000"
+		const eb = "1001100001000001000111000001000100011101111101000100000100011001111111000000101011111101000000"
+		src := FromStr(ss)
+		k := 3
+		dst := FromStr(sd)
+		CopyRange(dst.Range(0, dst.n), src.Range(k, dst.n-k))
+		if dst.String() != eb {
+			t.Fatalf("Test failed. got = %s, exp = %s\n", dst.String(), eb)
 		}
 	})
 
@@ -209,7 +195,7 @@ func TestBitArray(t *testing.T) {
 		// length same
 		a := FromStr(sa)
 		b := FromStr(sb)
-		SwapRange(&a, &b, 3)
+		SwapRange(a.Range(3, a.n), b.Range(3, b.n))
 		const ea = "11011100111011110101011110110010010100101010000110001010100011011010111001110110011111001101100000101011010011001110110000111010101100010110001101101011111100110000110101100000000100011110100111000101100001110010010011001001000001111010101110000001001101001"
 		const eb = "00010011000010000010001110000010001000111011111010001000001000110011111110000001010111111010000001101110010011000010011100100001110100111110010100101100101000101001110100001101100010001010001001100011100001001111011011001100101011001111100010100000001001111"
 
@@ -227,7 +213,7 @@ func TestBitArray(t *testing.T) {
 		// length same
 		a := FromStr("1110011101")
 		b := FromStr("1110110010")
-		SwapRange(&a, &b, 4)
+		SwapRange(a.Range(4, a.n), b.Range(4, b.n))
 		const ea = "1110110010"
 		const eb = "1110011101"
 
@@ -245,7 +231,7 @@ func TestBitArray(t *testing.T) {
 		a := FromStr("1110011")
 		b := FromStr("1110110010")
 		// swap_slice(&a, &b, 3)
-		SwapRange(&a, &b, 3)
+		SwapRange(a.Range(3, a.n-3), b.Range(3, b.n-3))
 		const ea = "1110110"
 		const eb = "1110011010"
 
@@ -270,7 +256,7 @@ func TestBitArray(t *testing.T) {
 		ea := "0001110" + sb[7:] + sa[127:]
 		eb := sb[:7] + sa[7:127]
 
-		SwapRange(&a, &b, 7)
+		SwapRange(a.Range(7, a.n-7), b.Range(7, b.n-7))
 
 		if a.String() != ea {
 			t.Fatalf("Test `a` failed. got = %s, exp = %s\n", a.String(), ea)
@@ -279,7 +265,6 @@ func TestBitArray(t *testing.T) {
 		if b.String() != eb {
 			t.Fatalf("Test `b` failed. got = %s, exp = %s\n", b.String(), eb)
 		}
-
 	})
 }
 
@@ -345,7 +330,7 @@ func BenchmarkBitArray(b *testing.B) {
 		b.StartTimer()
 
 		for i := 0; i < b.N; i++ {
-			SwapRange(&b1, &b2, 0)
+			SwapRange(b1.Range(0, b1.n), b2.Range(0, b2.n))
 		}
 	})
 
@@ -361,7 +346,7 @@ func BenchmarkBitArray(b *testing.B) {
 		b.StartTimer()
 
 		for i := 0; i < b.N; i++ {
-			SwapRange(&b1, &b2, 1)
+			SwapRange(b1.Range(1, b1.n), b2.Range(1, b2.n))
 		}
 	})
 

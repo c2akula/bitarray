@@ -25,6 +25,8 @@ func TestNew(t *testing.T) {
 		{65, 2},
 		{256, 4},
 		{257, 5},
+		{512, 8},
+		{768, 12},
 	}
 
 	for i, tt := range tests {
@@ -269,10 +271,19 @@ func TestBitArray(t *testing.T) {
 }
 
 func BenchmarkNew(b *testing.B) {
-	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
-		New(256)
-	}
+	b.Run("<=512", func(b *testing.B) {
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			New(512)
+		}
+	})
+
+	b.Run(">512", func(b *testing.B) {
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			New(768)
+		}
+	})
 }
 
 func BenchmarkBitArray(b *testing.B) {
@@ -397,7 +408,6 @@ func BenchmarkBitArray_Cnt(b *testing.B) {
 			ba.Cnt()
 		}
 	})
-
 }
 
 func BenchmarkBiandSi(b *testing.B) {

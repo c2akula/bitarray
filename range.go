@@ -9,10 +9,10 @@ type Range struct {
 
 // Range creates a Range object representing `n` bits starting at `b`.
 func (ba *BitArray) Range(b, n int) Range {
-	if (n-b < 0) || (n-b > ba.n) {
-		panic("index out of bounds")
+	if (b < ba.n) && (b+n-1 < ba.n) {
+		return Range{ba, b, n}
 	}
-	return Range{ba, b, n}
+	panic("index out of bounds")
 }
 
 // CopyRange copies bits from `src` into `dst` specified by the ranges.
